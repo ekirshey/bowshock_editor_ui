@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import { green } from '@material-ui/core/colors';
 import Box from '@material-ui/core/Box';
 import ModelTable from './ModelTable.js'
+import LoginMenu from './LoginMenu.js'
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -79,9 +80,10 @@ export default function MainMenu( props ) {
                     variant="fullWidth"
                     aria-label="action tabs example"
                 >
-                    <Tab label="Entities" {...a11yProps(0)} />
-                    <Tab label="Shaders" {...a11yProps(1)} />
-                    <Tab label="Game Specific" {...a11yProps(2)} />
+                    <Tab label="Login" {...a11yProps(0)} />
+                    <Tab label="Entities" {...a11yProps(1)} />
+                    <Tab label="Shaders" {...a11yProps(2)} />
+                    <Tab label="Game Specific" {...a11yProps(3)} />
                 </Tabs>
             </AppBar>
             <SwipeableViews
@@ -90,12 +92,15 @@ export default function MainMenu( props ) {
                 onChangeIndex={handleChangeIndex}
             >
                 <TabPanel value={value} index={0} dir={theme.direction}>
-                    <ModelTable socket={props.socket} messages = {props.messages} />
+                    <LoginMenu socket={props.socket} />
                 </TabPanel>
                 <TabPanel value={value} index={1} dir={theme.direction}>
-                    Item Two
+                    <ModelTable socket={props.socket} messages = {props.messages} />
                 </TabPanel>
                 <TabPanel value={value} index={2} dir={theme.direction}>
+                    Item Two
+                </TabPanel>
+                <TabPanel value={value} index={3} dir={theme.direction}>
                     Item Three
                 </TabPanel>
             </SwipeableViews>

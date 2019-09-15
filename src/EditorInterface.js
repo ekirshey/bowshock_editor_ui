@@ -1,11 +1,27 @@
 var EditorInterface = (function(  ) {
     var settings = {
-        editoraddr:'http://localhost:8080/entities',
+        URL : 'ws://localhost:8080'
     };
 
     return {
+        buildSocket: function() {
+            return new WebSocket(settings.URL)
+        },
+
+        initializeRoom: function( data, socket ) {
+            var msg = {
+                message_type : data.room_type,
+                user : data.user,
+                room : data.room,
+                password : data.password
+            }
+
+            socket.send( JSON.stringify(msg) );
+        },
+
         addModel: function( data, socket ) {
             var msg = {
+                message_type : "add",
                 name : data.name,
                 model_id : parseInt(data.model_id),
                 translation : {
@@ -30,6 +46,7 @@ var EditorInterface = (function(  ) {
 
         editModel: function( data, socket ) {
             var msg = {
+                message_type : "edit",
                 entity_id : data.entity_id,
                 name : data.name,
                 model_id : parseInt(data.model_id),

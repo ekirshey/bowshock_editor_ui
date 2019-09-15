@@ -1,6 +1,6 @@
 import React from 'react';
 import MaterialTable from 'material-table';
-import EditorInterface from './EditorInterface.js'
+import EditorInterface from './EditorInterface.js';
 
 export default function ModelTable( props ) {
     const [state, setState] = React.useState({
@@ -28,22 +28,9 @@ export default function ModelTable( props ) {
             columns={state.columns}
             data={props.messages}
             editable={{
-                onRowAdd: newData =>
-                    new Promise((resolve, reject) => {
-                        setTimeout(() => {
-                            
-                            EditorInterface.addModel( newData, props.socket )
-                            /*
-                            .then( response => {
-                                newData.entity_id = response;
-                                const data = [...state.data];
-                                data.push(newData);                                   
-                                setState({ ...state, data });
-                            });
-                            */
-                            resolve()
-                        }, 1000)
-                    }),
+                onRowAdd: newData =>{
+                    EditorInterface.addModel( newData, props.socket )
+                },
                 onRowUpdate: (newData, oldData) =>
                     new Promise((resolve, reject) => {
                         setTimeout(() => {

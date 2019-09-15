@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import MainMenu from './MainMenu.js'
+import EditorInterface from './EditorInterface.js';
 import './App.css';
-
-const URL = 'ws://localhost:8080'
 
 class App extends Component {
 
@@ -10,7 +9,8 @@ class App extends Component {
         messages : []
     }
 
-    socket = new WebSocket(URL)
+    // You can use something in react called a context to pass the socket around easier
+    socket = EditorInterface.buildSocket()
 
     componentDidMount() {
         this.socket.onopen = () => {
@@ -20,7 +20,7 @@ class App extends Component {
 
         this.socket.onmessage = evt => {
             const message = JSON.parse(evt.data)
-            console.log(message)
+            // Actually parse data here
             this.addMessage(message)
         }
 
@@ -28,7 +28,7 @@ class App extends Component {
             console.log('disconnected')
             // automatically try to reconnect on connection loss
             this.setState({
-                socket: new WebSocket(URL),
+                socket: EditorInterface.buildSocket(),
             })
         }
     }
