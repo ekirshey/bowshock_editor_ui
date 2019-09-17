@@ -11,9 +11,10 @@ var EditorInterface = (function(  ) {
         initializeRoom: function( data, socket ) {
             var msg = {
                 message_type : data.room_type,
-                user : data.user,
-                room : data.room,
-                password : data.password
+                user_name : data.user_name,
+                user_password : data.user_password,
+                room_name : data.room_name,
+                room_password : data.room_password
             }
 
             socket.send( JSON.stringify(msg) );
