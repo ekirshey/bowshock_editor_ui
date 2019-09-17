@@ -20,6 +20,7 @@ class App extends Component {
 
         this.socket.onmessage = evt => {
             const message = JSON.parse(evt.data)
+            console.log(message);
             // Actually parse data here
             this.addMessage(message)
         }

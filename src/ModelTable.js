@@ -28,9 +28,14 @@ export default function ModelTable( props ) {
             columns={state.columns}
             data={props.messages}
             editable={{
-                onRowAdd: newData =>{
-                    EditorInterface.addModel( newData, props.socket )
-                },
+                onRowAdd: newData =>
+                    new Promise((resolve, reject) => {
+                        setTimeout(() => {
+
+                            EditorInterface.addModel( newData, props.socket )
+                            resolve()
+                        }, 1000)
+                    }),
                 onRowUpdate: (newData, oldData) =>
                     new Promise((resolve, reject) => {
                         setTimeout(() => {
