@@ -20,6 +20,14 @@ var EditorInterface = (function(  ) {
             socket.send( JSON.stringify(msg) );
         },
 
+        leaveRoom: function(socket) {
+            var msg = {
+                message_type : "leave_room"
+            }
+
+            socket.send( JSON.stringify(msg) );            
+        },
+
         addModel: function( data, socket ) {
             var msg = {
                 message_type : "add",

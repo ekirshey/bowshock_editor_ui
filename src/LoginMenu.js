@@ -3,6 +3,31 @@ import { useState } from 'react';
 import EditorInterface from './EditorInterface.js';
 
 export default function LoginMenu( props ) {
+    console.log(props)      
+    if ( props.room_status == null ) {
+        return <LoginForm socket={props.socket} />;
+    } 
+    else if (props.room_status.hasOwnProperty("error"))
+    {
+        return <LoginForm socket={props.socket} error={props.room_status.error} />;
+    }
+    else {
+        return <LoginInfo socket={props.socket} room_status={props.room_status} />
+    }
+}
+
+function PrintError( props ) 
+{
+    if (props.error == null)
+    {
+        return <div></div>
+    }
+    else {
+        return <font color="red">ERROR: {props.error} </font>
+    }
+}
+
+function LoginForm( props ) {
     const [form, setValues] = useState({
         room_type : "",
         user_name : "",
@@ -28,6 +53,7 @@ export default function LoginMenu( props ) {
     // I'll clean this up at some point
     return (
         <div>
+            <PrintError error={props.error}/>
             <form onSubmit={handleFormSubmit}>
                 <div>
                     <label>
@@ -83,6 +109,26 @@ export default function LoginMenu( props ) {
                 </div>
                 <input type="submit" value="Submit" />
             </form>            
+        </div>
+    );
+}
+
+function LoginInfo( props ) {
+    function handleLeaveRoom(e) {
+        EditorInterface.leaveRoom( props.socket )
+    }
+
+    return (
+        <div>
+            <div>     
+                Room Name: {props.room_status.room_name} 
+            </div>    
+            <div>
+                User Name: {props.room_status.user_name}
+            </div>
+            <div>
+                <button type="button" onClick={handleLeaveRoom}>Leave Room</button> 
+            </div>
         </div>
     );
 }

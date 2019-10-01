@@ -6,6 +6,7 @@ import './App.css';
 class App extends Component {
 
     state = {
+        room_status : null,
         messages : []
     }
 
@@ -20,13 +21,47 @@ class App extends Component {
 
         this.socket.onmessage = evt => {
             const message = JSON.parse(evt.data)
-            console.log(message);
-            // Actually parse data here
-            this.addMessage(message)
+            
+            // Parse the data
+            if (message.type === "create_room" || 
+                message.type === "join_room") 
+            {
+                
+                let owner = false
+                if (message.type === "create_room") {
+                    owner = true;
+                }
+                
+                if ( message.result === "OK") 
+                { 
+                    this.setState(state => ({ 
+                        room_status: {
+                            room_name : message.room_name,
+                            user_name : message.user_name,
+                            owner : owner
+                        }
+                    }))
+                }
+                else {             
+                    this.setState(state => ({ 
+                        room_status: {
+                            error : message.error
+                        }
+                    }))                   
+                }
+            }
+            else if (message.type === "leave_room")
+            {
+                this.setState(state => ({ 
+                    room_status: null
+                }))     
+            }
+            else {
+                this.addMessage(message)
+            }
         }
 
         this.socket.onclose = () => {
-            console.log('disconnected')
             // automatically try to reconnect on connection loss
             this.setState({
                 socket: EditorInterface.buildSocket(),
@@ -39,7 +74,9 @@ class App extends Component {
 
     render() {
         return (
-            <MainMenu socket={this.socket} messages={this.state.messages} />
+            <MainMenu socket={this.socket} 
+                      messages={this.state.messages}
+                      room_status={this.state.room_status} />
         );
     }
 }
