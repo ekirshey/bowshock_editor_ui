@@ -118,6 +118,22 @@ function LoginInfo( props ) {
         EditorInterface.leaveRoom( props.socket )
     }
 
+    function buildMemberList() {
+        let member_list = "No other members";
+        let members = props.room_status.members;
+        if (props.room_status.members != null) {
+            member_list = <ul>
+                {
+                    members.map(
+                        (member,i) =><li key={i}>{member}</li>
+                    )
+                }
+            </ul>
+        }
+        
+        return member_list
+    }
+
     return (
         <div>
             <div>     
@@ -125,6 +141,9 @@ function LoginInfo( props ) {
             </div>    
             <div>
                 User Name: {props.room_status.user_name}
+            </div>
+            <div>
+                Members: {buildMemberList()}
             </div>
             <div>
                 <button type="button" onClick={handleLeaveRoom}>Leave Room</button> 

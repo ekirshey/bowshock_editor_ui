@@ -38,7 +38,8 @@ class App extends Component {
                         room_status: {
                             room_name : message.room_name,
                             user_name : message.user_name,
-                            owner : owner
+                            owner : owner,
+                            members : message.members
                         }
                     }))
                 }
