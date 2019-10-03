@@ -1,10 +1,10 @@
 var EditorInterface = (function(  ) {
     var settings = {
-        URL : 'ws://localhost:8080'
+        URL : process.env.REACT_APP_BOWSHOCK_SERVER
     };
 
     return {
-        buildSocket: function() {
+        buildSocket: function() {       
             return new WebSocket(settings.URL)
         },
 
