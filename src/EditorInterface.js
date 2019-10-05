@@ -2,7 +2,8 @@ export const EditorSchema = {
     message_type : {
         CREATE_ROOM : 0,
         JOIN_ROOM : 1,
-        LEAVE_ROOM : 2
+        LEAVE_ROOM : 2,
+        MEMBERS_UPDATE : 3
     },
     server_status : {
         OK : 200,

@@ -65,6 +65,20 @@ class App extends Component {
                     room_status: null
                 }))     
             }
+            else if (message.type === EditorSchema.message_type.MEMBERS_UPDATE)
+            {
+                console.log("new one?")
+                console.log(this.state.room_status)
+
+                this.setState(state => ({ 
+                    room_status : {
+                        ...state.room_status,
+                        members : message.members
+                    }
+                }))
+
+                console.log(`test ${this.state.room_status.room_name}`)
+            }
             else {
                 this.addMessage(message)
             }
