@@ -92,10 +92,10 @@ export default function MainMenu( props ) {
                 onChangeIndex={handleChangeIndex}
             >
                 <TabPanel value={value} index={0} dir={theme.direction}>
-                    <LoginMenu socket={props.socket} room_status={props.room_status}/>
+                    <LoginMenu wsc={props.wsc} room_status={props.room_status}/>
                 </TabPanel>
                 <TabPanel value={value} index={1} dir={theme.direction}>
-                    <ModelTable socket={props.socket} messages = {props.messages} />
+                    <ModelTable wsc={props.wsc} messages = {props.messages} />
                 </TabPanel>
                 <TabPanel value={value} index={2} dir={theme.direction}>
                     Item Two

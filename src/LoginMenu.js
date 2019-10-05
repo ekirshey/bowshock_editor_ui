@@ -1,18 +1,18 @@
 import React from 'react';
 import { useState } from 'react';
-import EditorInterface from './EditorInterface.js';
+import {EditorSchema, EditorInterface} from './EditorInterface.js';
 
 export default function LoginMenu( props ) {
     console.log(props)      
     if ( props.room_status == null ) {
-        return <LoginForm socket={props.socket} />;
+        return <LoginForm wsc={props.wsc} />;
     } 
     else if (props.room_status.hasOwnProperty("error"))
     {
-        return <LoginForm socket={props.socket} error={props.room_status.error} />;
+        return <LoginForm wsc={props.wsc} error={props.room_status.error} />;
     }
     else {
-        return <LoginInfo socket={props.socket} room_status={props.room_status} />
+        return <LoginInfo wsc={props.wsc} room_status={props.room_status} />
     }
 }
 
@@ -29,7 +29,7 @@ function PrintError( props )
 
 function LoginForm( props ) {
     const [form, setValues] = useState({
-        room_type : "",
+        room_type : 0,
         user_name : "",
         user_password : "",
         room_name : "",
@@ -45,9 +45,9 @@ function LoginForm( props ) {
 
     function handleFormSubmit(e) {
         e.preventDefault();
+        form.room_type = parseInt(form.room_type)
         console.log(form);
-        
-        EditorInterface.initializeRoom( form, props.socket )
+        EditorInterface.initializeRoom( form, props.wsc )
     }
 
     // I'll clean this up at some point
@@ -59,14 +59,14 @@ function LoginForm( props ) {
                     <label>
                         <input type="radio" 
                             name="room_type" 
-                            value="create_room"
+                            value={EditorSchema.message_type.CREATE_ROOM}
                             onChange={updateField} />
                         Create
                     </label>
                     <label>
                         <input type="radio" 
                             name="room_type" 
-                            value="join_room"
+                            value={EditorSchema.message_type.JOIN_ROOM}
                             onChange={updateField} />
                         Join
                     </label>
@@ -115,7 +115,7 @@ function LoginForm( props ) {
 
 function LoginInfo( props ) {
     function handleLeaveRoom(e) {
-        EditorInterface.leaveRoom( props.socket )
+        EditorInterface.leaveRoom( props.wsc )
     }
 
     function buildMemberList() {

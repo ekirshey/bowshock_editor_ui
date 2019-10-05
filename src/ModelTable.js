@@ -1,6 +1,6 @@
 import React from 'react';
 import MaterialTable from 'material-table';
-import EditorInterface from './EditorInterface.js';
+import {EditorInterface} from './EditorInterface.js';
 
 export default function ModelTable( props ) {
     const [state, setState] = React.useState({
@@ -32,7 +32,7 @@ export default function ModelTable( props ) {
                     new Promise((resolve, reject) => {
                         setTimeout(() => {
 
-                            EditorInterface.addModel( newData, props.socket )
+                            EditorInterface.addModel( newData, props.wsc )
                             resolve()
                         }, 1000)
                     }),
@@ -44,7 +44,7 @@ export default function ModelTable( props ) {
                             const index = data.indexOf(oldData);
                             data[index] = newData;
 
-                            EditorInterface.editModel( newData, props.socket );
+                            EditorInterface.editModel( newData, props.wsc );
 
                             setState({ ...state, data });
                             

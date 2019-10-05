@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import MainMenu from './MainMenu.js'
-import EditorInterface from './EditorInterface.js';
+import WebSocketClient from './WebSocketClient.js'
+import {EditorSchema, EditorInterface} from './EditorInterface.js';
 import './App.css';
 
 class App extends Component {
@@ -10,29 +11,36 @@ class App extends Component {
         messages : []
     }
 
-    // You can use something in react called a context to pass the socket around easier
-    socket = EditorInterface.buildSocket()
+    // You can use something in react called a context to pass the wsc around easier
+    wsc = new WebSocketClient();
 
     componentDidMount() {
-        this.socket.onopen = () => {
-            // on connecting, do nothing but log it to the console
-            console.log('connected')
-        }
+        this.wsc.open(EditorInterface.url())
 
-        this.socket.onmessage = evt => {
-            const message = JSON.parse(evt.data)
+        this.wsc.onmessage = (data, flags, number) => {
+            const message = JSON.parse(data.data)
             
+            if (message === null) {
+                console.log("Invalid response")
+                this.setState(state => ({ 
+                    room_status: {
+                        error : "NULL RESPONSE"
+                    }
+                }))     
+                return;
+            }
+
             // Parse the data
-            if (message.type === "create_room" || 
-                message.type === "join_room") 
+            if (message.type === EditorSchema.message_type.CREATE_ROOM || 
+                message.type === EditorSchema.message_type.JOIN_ROOM) 
             {
                 
                 let owner = false
-                if (message.type === "create_room") {
+                if (message.type === EditorSchema.message_type.CREATE_ROOM) {
                     owner = true;
                 }
                 
-                if ( message.result === "OK") 
+                if ( message.result === EditorSchema.server_status.OK) 
                 { 
                     this.setState(state => ({ 
                         room_status: {
@@ -46,12 +54,12 @@ class App extends Component {
                 else {             
                     this.setState(state => ({ 
                         room_status: {
-                            error : message.error
+                            error : message.result_str
                         }
                     }))                   
                 }
             }
-            else if (message.type === "leave_room")
+            else if (message.type === EditorSchema.message_type.LEAVE_ROOM)
             {
                 this.setState(state => ({ 
                     room_status: null
@@ -61,13 +69,6 @@ class App extends Component {
                 this.addMessage(message)
             }
         }
-
-        this.socket.onclose = () => {
-            // automatically try to reconnect on connection loss
-            this.setState({
-                socket: EditorInterface.buildSocket(),
-            })
-        }
     }
 
     addMessage = message =>
@@ -75,7 +76,7 @@ class App extends Component {
 
     render() {
         return (
-            <MainMenu socket={this.socket} 
+            <MainMenu wsc={this.wsc} 
                       messages={this.state.messages}
                       room_status={this.state.room_status} />
         );
