@@ -3,13 +3,24 @@ import { useState } from 'react';
 import {EditorSchema, EditorInterface} from './EditorInterface.js';
 
 export default function LoginMenu( props ) {
-    console.log(props)      
-    if ( props.room_status == null ) {
-        return <LoginForm wsc={props.wsc} />;
+    if ( props.login_status == null ) 
+    {
+        return <UserLoginForm wsc={props.wsc}/>;
+    }
+    else if (props.login_status.hasOwnProperty("error"))
+    {
+        return <UserLoginForm wsc={props.wsc} error={props.login_status.error} />;
+    }
+    else if ( props.room_status == null ) 
+    {
+        return <RoomLoginForm wsc={props.wsc} 
+                              user_name={props.login_status.user_name} />;
     } 
     else if (props.room_status.hasOwnProperty("error"))
     {
-        return <LoginForm wsc={props.wsc} error={props.room_status.error} />;
+        return <RoomLoginForm wsc={props.wsc} 
+                              user_name={props.login_status.user_name}
+                              error={props.room_status.error} />;
     }
     else {
         return <LoginInfo wsc={props.wsc} room_status={props.room_status} />
@@ -27,13 +38,11 @@ function PrintError( props )
     }
 }
 
-function LoginForm( props ) {
+function UserLoginForm( props ) {
     const [form, setValues] = useState({
-        room_type : 0,
+        login_type : 0,
         user_name : "",
         user_password : "",
-        room_name : "",
-        room_password : "",
     });
 
     const updateField = e => {
@@ -45,9 +54,9 @@ function LoginForm( props ) {
 
     function handleFormSubmit(e) {
         e.preventDefault();
-        form.room_type = parseInt(form.room_type)
+        form.login_type = parseInt(form.login_type)
         console.log(form);
-        EditorInterface.initializeRoom( form, props.wsc )
+        EditorInterface.initializeUser( form, props.wsc )
     }
 
     // I'll clean this up at some point
@@ -58,17 +67,17 @@ function LoginForm( props ) {
                 <div>
                     <label>
                         <input type="radio" 
-                            name="room_type" 
-                            value={EditorSchema.message_type.CREATE_ROOM}
+                            name="login_type" 
+                            value={EditorSchema.message_type.ADD_NEW_USER}
                             onChange={updateField} />
-                        Create
+                        Create User
                     </label>
                     <label>
                         <input type="radio" 
-                            name="room_type" 
-                            value={EditorSchema.message_type.JOIN_ROOM}
+                            name="login_type" 
+                            value={EditorSchema.message_type.AUTHENTICATE_USER}
                             onChange={updateField} />
-                        Join
+                        Login
                     </label>
                 </div>
                 <div>
@@ -85,9 +94,91 @@ function LoginForm( props ) {
                         User Password 
                     </label>
                     <input type="password" 
-                           name="user_password" 
-                           value={form.user_password} 
-                           onChange={updateField} />
+                        name="user_password" 
+                        value={form.password} 
+                        onChange={updateField} />
+                </div>
+                <input type="submit" value="Submit" />
+            </form>            
+        </div>
+    );
+}
+
+function RoomLoginForm( props ) {
+    const [form, setValues] = useState({
+        room_type : EditorSchema.message_type.CREATE_ROOM,
+        user_name : props.user_name,
+        admin_password : "",
+        room_name : "",
+        room_password : "",
+        password_disabled : false,
+    });
+
+    const updateField = e => {
+        setValues({
+            ...form,
+            [e.target.name] : e.target.value
+        });
+    }
+
+    const updateRadio = e => {
+        
+        var disabled = null;
+        if (e.target.value === "0") {
+            disabled = false;
+        }
+        else if (e.target.value === "1") {
+            disabled = true;
+        }
+
+        setValues({
+            ...form,
+            password_disabled : disabled,
+            [e.target.name] : e.target.value
+        });
+    }
+
+    const handleFormSubmit = (e) => {
+        e.preventDefault();
+        form.room_type = parseInt(form.room_type)
+        EditorInterface.initializeRoom( form, props.wsc )
+    }
+
+    // I'll clean this up at some point
+    return (
+        <div>
+            <PrintError error={props.error}/>
+            <form onSubmit={handleFormSubmit}>
+                <div>
+                    <label>
+                        <input type="radio" 
+                            name="room_type" 
+                            value={EditorSchema.message_type.CREATE_ROOM}
+                            onChange={updateRadio}/>
+                        Create
+                    </label>
+                    <label>
+                        <input type="radio" 
+                            name="room_type" 
+                            value={EditorSchema.message_type.JOIN_ROOM}
+                            onChange={updateRadio} />
+                        Join
+                    </label>
+                </div>
+                <div>
+                    <label htmlFor="user_name">
+                        User Name <b>{form.user_name}</b>
+                    </label>
+                </div>
+                <div>
+                    <label htmlFor="admin_password">
+                        Admin Password 
+                    </label>
+                    <input type="password" 
+                        name="admin_password" 
+                        value={form.admin_password} 
+                        onChange={updateField}
+                        disabled={form.password_disabled} />
                 </div>
                 <div>
                     <label htmlFor="room_name">
